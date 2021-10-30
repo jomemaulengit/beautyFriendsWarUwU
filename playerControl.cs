@@ -47,7 +47,7 @@ public class playerControl : MonoBehaviour
         }else{
             camera.localPosition = Vector3.Lerp(camera.localPosition,basePosition,0.1f);
         }
-        Debug.Log(rotation.x);
+        axis.localPosition = transform.position;
         Control();
     }
 
