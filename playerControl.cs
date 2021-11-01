@@ -59,7 +59,7 @@ public class playerControl : MonoBehaviour
         }else{
             camera.localPosition = Vector3.Lerp(camera.localPosition,basePosition,0.1f);
         }
-        axis.localPosition = transform.position;
+        axis.localPosition = new Vector3(transform.position.x,transform.position.y+2.5f,transform.position.z);
         Control();
     }
 
@@ -89,23 +89,23 @@ public class playerControl : MonoBehaviour
         }
     }
     private void move(Vector3 rotation,float angle){
-        myrb.velocity = transform.right*speed;
+        myrb.velocity = transform.forward*speed;
         transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(0,rotation.x+angle,0),0.15f);
 }
 
     private void Control(){
         switchCamera(axis);
         if (Input.GetKey(KeyCode.W)){
-            move(rotation,0f);
+            move(rotation,90f);
         }
         if (Input.GetKey(KeyCode.S)){
-            move(rotation,-180);
+            move(rotation,-90);
         }
         if (Input.GetKey(KeyCode.D)){
-            move(rotation,90);
+            move(rotation,-180);
         }
         if (Input.GetKey(KeyCode.A)){
-            move(rotation,-90);
+            move(rotation,0);
         }
         if (Input.GetKey(KeyCode.Space) && isGrounded){
             myrb.AddForce(Vector3.up*jumpForce,ForceMode.Impulse);
