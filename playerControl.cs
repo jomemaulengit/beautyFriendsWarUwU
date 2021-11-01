@@ -5,6 +5,7 @@ using UnityEngine;
 public class playerControl : MonoBehaviour
 {
     [SerializeField] float speed;
+    [SerializeField] float jumpForce;
     [SerializeField] Vector2 nearCameraSpeed=new Vector2(0.12f,0.08f);
     [SerializeField] Vector2 sensitibity;
     [SerializeField] Vector2 limit=new Vector2(0,325);
@@ -12,13 +13,18 @@ public class playerControl : MonoBehaviour
     [SerializeField] Vector3 cameraRotation = new Vector3(0, 0, 0);
     [SerializeField] new Transform camera=null;
     [SerializeField] Transform axis=null;
+    [SerializeField] Transform groundCheck;
+    [SerializeField] LayerMask groundLayer;
     [SerializeField] private bool cursorIsBlocked=true;
     [SerializeField] private bool isFPS=false;
     
+    private bool isGrounded=true;
     private Vector2 rotation;
     private Vector3 basePosition= new Vector3(0,0,0);
     private Rigidbody myrb;
+    private Collider[] groundCollision;
     private float maxVarticalDegrees=90;
+    
 
 
 // =======================START====================================================
@@ -34,9 +40,15 @@ public class playerControl : MonoBehaviour
     private void FixedUpdate(){
         Control();
         thirdpersonCamera(axis);
+        Grounded();
+        Debug.Log(isGrounded);
     }
 
 // =======================CONTROL====================================================
+    private void Grounded(){
+        groundCollision = Physics.OverlapSphere(groundCheck.position, 0.5f,groundLayer);
+        isGrounded = groundCollision.Length > 0;
+    }
     private void thirdpersonCamera(Transform axis){
         Vector2 velocity = MouseLook()*sensitibity;
         rotation += velocity*Time.deltaTime;
@@ -77,9 +89,10 @@ public class playerControl : MonoBehaviour
         }
     }
     private void move(Vector3 rotation,float angle){
+        myrb.velocity = transform.right*speed;
         transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(0,rotation.x+angle,0),0.15f);
-        myrb.velocity = transform.right*speed;  
-    }
+}
+
     private void Control(){
         switchCamera(axis);
         if (Input.GetKey(KeyCode.W)){
@@ -93,6 +106,9 @@ public class playerControl : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.A)){
             move(rotation,-90);
+        }
+        if (Input.GetKey(KeyCode.Space) && isGrounded){
+            myrb.AddForce(Vector3.up*jumpForce,ForceMode.Impulse);
         }
         if (Input.GetKeyDown(KeyCode.Tab)){
             if(cursorIsBlocked==true)
